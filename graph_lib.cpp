@@ -770,53 +770,53 @@ void Distancia_matrix(const vector<vector<bool>>& matrix, int origem, int destin
 
 // TP2:
 
-// vector<vector<pair<int, float>>> txt_to_weight_adjacency_vector(const string& nome_arquivo) {
+vector<vector<pair<int, float>>> txt_to_weight_adjacency_vector(const string& nome_arquivo) {
 
-//     ifstream arquivo(nome_arquivo);
-//     if (!arquivo.is_open()) {
-//         throw runtime_error("Erro ao abrir o arquivo de entrada!");
-//     }
+    ifstream arquivo(nome_arquivo);
+    if (!arquivo.is_open()) {
+        throw runtime_error("Erro ao abrir o arquivo de entrada!");
+    }
     
-//     int numVertices, u, v;
-//     float w;
-//     int INF = 1e9;
+    int numVertices, u, v;
+    float w;
+    int INF = 1e9;
     
-//     // Ler o número de vértices
-//     arquivo >> numVertices;
+    // Ler o número de vértices
+    arquivo >> numVertices;
 
-//     vector<vector<pair<int, float>>> graph(numVertices + 1);
+    vector<vector<pair<int, float>>> graph(numVertices + 1);
 
-//     pair<int, float> flag;
-//     flag.first = 0;
-//     flag.second = 0;
-//     graph[0].push_back(flag);
+    pair<int, float> flag;
+    flag.first = 0;
+    flag.second = 0;
+    graph[0].push_back(flag);
 
-//     while (arquivo >> u >> v >> w) {
+    while (arquivo >> u >> v >> w) {
         
-//         pair<int,float> relacao;
-//         relacao.first = v; 
-//         relacao.second = w; 
+        pair<int,float> relacao;
+        relacao.first = v; 
+        relacao.second = w; 
 
-//         if(w < 0) {
-//             flag.first = -1;
-//             flag.second = -1;
-//             graph[0].clear();
-//             graph[0].push_back(flag);
+        if(w < 0) {
+            flag.first = -1;
+            flag.second = -1;
+            graph[0].clear();
+            graph[0].push_back(flag);
 
-//             // Essa parte coloca uma "flag" dentro de uma parte do grafo que não é utilizada: o vetor relacionado ao 0. Logo,
-//             // se essa flag existir, o algoritmo de Dijkstra não será executada.
-//         }
+            // Essa parte coloca uma "flag" dentro de uma parte do grafo que não é utilizada: o vetor relacionado ao 0. Logo,
+            // se essa flag existir, o algoritmo de Dijkstra não será executada.
+        }
 
-//         graph[u].push_back(relacao);
-//         relacao.first = u; 
-//         graph[v].push_back(relacao);
+        graph[u].push_back(relacao);
+        relacao.first = u; 
+        graph[v].push_back(relacao);
 
-//         }
+        }
 
-//         arquivo.close();
+        arquivo.close();
 
-//     return graph;
-// }
+    return graph;
+}
 
 
 
@@ -1472,7 +1472,7 @@ void Caminho_Minimo_Rede(const vector<vector<pair<int, float>>>& graph, string n
 
 // TP3: Representando redes de fluxo e Algoritmo de Ford-Fulkerson:
 
-vector<vector<pair<int, int>>> txt_to_weight_adjacency_vector(const string& nome_arquivo, bool direcionado = false) {
+vector<vector<pair<int, int>>> txt_to_weight_adjacency_targeted_vector(const string& nome_arquivo, bool direcionado) {
 
     ifstream arquivo(nome_arquivo);
     if (!arquivo.is_open()) {
@@ -1527,7 +1527,7 @@ vector<vector<pair<int, int>>> txt_to_weight_adjacency_vector(const string& nome
     return graph;
 }
 
-vector<vector<pair<int, pair<int, int>>>> txt_to_flow_network(const string& nome_arquivo, bool direcionado = true) {
+vector<vector<pair<int, pair<int, int>>>> txt_to_flow_network_vector(const string& nome_arquivo, bool direcionado) {
 
     ifstream arquivo(nome_arquivo);
     if (!arquivo.is_open()) {
@@ -1535,8 +1535,8 @@ vector<vector<pair<int, pair<int, int>>>> txt_to_flow_network(const string& nome
     }
     
     int numVertices, u, v, capacidade, fluxo;
-    float w;
     int INF = 1e9;
+    int fluxo = 0;
     
     arquivo >> numVertices;
 
@@ -1572,7 +1572,7 @@ vector<vector<pair<int, pair<int, int>>>> txt_to_flow_network(const string& nome
     return graph;
 }
 
-vector<vector<pair<int, pair<int, bool>>>> create_residual_graph(const vector<vector<pair<int, pair<int, int>>>>& graph) {
+vector<vector<pair<int, pair<int, bool>>>> create_residual_graph_vector(const vector<vector<pair<int, pair<int, int>>>>& graph) {
 
     int numVertices = graph.size();
     vector<vector<pair<int, pair<int, bool>>>> residual(numVertices);
@@ -1606,7 +1606,7 @@ vector<vector<pair<int, pair<int, bool>>>> create_residual_graph(const vector<ve
 
 int FordFulkerson_Vector(vector<vector<pair<int, pair<int, int>>>> graph, int s, int t) {
 
-    vector<vector<pair<int, pair<int, bool>>>> residual = create_residual_graph(graph);
+    vector<vector<pair<int, pair<int, bool>>>> residual = create_residual_graph_vector(graph);
     int numVertices = graph.size();
     vector<int> pai(numVertices);
 
@@ -1633,7 +1633,8 @@ int FordFulkerson_Vector(vector<vector<pair<int, pair<int, int>>>> graph, int s,
 
 }
 
-int find_Bottleneck(const vector<vector<pair<int, pair<int, bool>>>>& residual, int s, int t, vector<int>& pai) {
+int Find_Bottleneck_Vector(const vector<vector<pair<int, pair<int, bool>>>>& residual, int s, int t, vector<int>& pai) {
+
     int INF = numeric_limits<int>::max();
     vector<bool> visitados(residual.size(), false);
 
@@ -1691,10 +1692,231 @@ int find_Bottleneck(const vector<vector<pair<int, pair<int, bool>>>>& residual, 
 
 
 
+void BFS(const vector<vector<int>>& graph, int origem){
+
+    int INF = 1e9;
+
+    vector<int> nivel(graph.size(), INF);
+    vector<int> pai(graph.size(), INF);
+    vector<bool> visitados(graph.size(), false);
+    queue <int> fila;
+
+    visitados[origem] = true;
+    nivel[origem] = 0;
+    pai[origem] = -1;
+    fila.push(origem);
+    while(!fila.empty()) {
+        int atual = fila.front();
+        fila.pop();
+        for(int vizinho : graph[atual]){
+
+            if(!visitados[vizinho]){
+                fila.push(vizinho);
+                visitados[vizinho] = true;
+                nivel[vizinho] = nivel[atual] + 1;
+                pai[vizinho] = atual;
+
+            }       
+        }       
+    }
+
+} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//MATRIZ
+
+
+vector<vector<float>> txt_to_weight_adjacency_matrix(const string& nome_arquivo, bool direcionado) {
+
+    ifstream arquivo(nome_arquivo);
+    if (!arquivo.is_open()) {
+        throw runtime_error("Erro ao abrir o arquivo de entrada!");
+    }
+
+    int numVertices, u, v;
+    float w;
+    int INF = 1e9;
+
+    // Ler o número de vértices
+    arquivo >> numVertices;
+
     
+    vector<vector<float>> matrix(numVertices + 1, vector<float>(numVertices + 1, INF)); 
+
+    while (arquivo >> u >> v >> w) {
+
+        if(w < 0) {
+            matrix[0][0] = -1;
+            // Essa parte coloca uma "flag" dentro de uma parte do grafo que não é utilizada: o vetor relacionado ao 0. Logo,
+            // se essa flag existir, o algoritmo de Dijkstra não será executada.
+
+
+            // tirar essa parte da flag provavelmente
+        }
+        matrix[u][v] = w;  
+
+        if(direcionado == false){
+            matrix[v][u] = w; 
+        }
+
+    }
+
+    arquivo.close();
+
+    return matrix;
+}
+
+vector<vector<pair<int, int>>> txt_to_flow_network_matrix(const string& nome_arquivo, bool direcionado) {
+
+    ifstream arquivo(nome_arquivo);
+    if (!arquivo.is_open()) {
+        throw runtime_error("Erro ao abrir o arquivo de entrada!");
+    }
+
+    int numVertices, u, v, capacidade;
+    int fluxo = 0; // Fluxo inicial das arestas
+
+    // Lê o número de vértices
+    arquivo >> numVertices;
+
+    // Inicializa a matriz de adjacência com pares (capacidade, fluxo) zerados
+    vector<vector<pair<int, int>>> matrix(numVertices + 1, vector<pair<int, int>>(numVertices + 1, {0, 0}));
+
+    // Lê as arestas do arquivo
+    while (arquivo >> u >> v >> capacidade) {
+        // Define a capacidade da aresta e o fluxo inicial (0)
+        matrix[u][v] = {capacidade, fluxo};
+
+        // Se o grafo não for direcionado, adiciona a aresta inversa
+        if (direcionado == false) {
+            matrix[v][u] = {capacidade, fluxo};
+        }
+    }
+
+    arquivo.close();
+
+    return matrix;
+}
+
+vector<vector<pair<int, pair<int, bool>>>> create_residual_graph_matrix(const vector<vector<pair<int, int>>>& matrix) {
+    int numVertices = matrix.size();
+
+    // Inicializa a matriz residual
+    vector<vector<pair<int, pair<int, bool>>>> residual(numVertices, vector<pair<int, pair<int, bool>>>(numVertices, {0, {0, false}}));
+
+    // Percorre toda a matriz de adjacência
+    for (int u = 0; u < numVertices; ++u) {
+        for (int v = 0; v < numVertices; ++v) {
+            int capacidade = matrix[u][v].first; // Capacidade da aresta original
+            int fluxo = matrix[u][v].second;     // Fluxo na aresta original
+
+            if (capacidade > 0) {
+                // Atualiza aresta direta
+                residual[u][v].first = capacidade - fluxo;  // Capacidade residual
+                residual[u][v].second.first = true;         // Direção direta
+
+                // Atualiza aresta reversa
+                residual[v][u].first = fluxo;               // Capacidade residual reversa
+                residual[v][u].second.first = false;        // Direção reversa
+            }
+        }
+    }
+
+    return residual;
+}
+
+// fazer um txt de resposta!
+
+int FordFulkerson_Matrix(vector<vector<pair<int, int>>> matrix, int s, int t) {
+
+    vector<vector<pair<int, pair<int, bool>>>> residual = create_residual_graph_matrix(matrix);
+    int numVertices = matrix.size();
+    vector<int> pai(numVertices);
+
+    int bottleneck;
+    while (bottleneck = find_Bottleneck(residual, s, t, pai) != 0) {
+
+        
 
 
 
+
+
+
+
+        
+
+    }
+
+
+
+
+
+
+
+}
+
+int find_Bottleneck(const vector<vector<pair<int, pair<int, bool>>>>& residual, int s, int t, vector<int>& pai) {
+    
+    int INF = numeric_limits<int>::max();
+    int numVertices = residual.size();
+    vector<bool> visitados(numVertices, false);
+
+    queue<int> fila;
+    visitados[s] = true;
+    pai.assign(numVertices, -1); // Reseta o vetor pai
+    fila.push(s);
+
+    // Realiza a BFS para encontrar o caminho de s até t
+    while (!fila.empty()) {
+        int atual = fila.front();
+        fila.pop();
+
+        for (int vizinho = 0; vizinho < numVertices; ++vizinho) {
+            int capacidade = residual[atual][vizinho].first;
+
+            // Se o vizinho não foi visitado e a capacidade é maior que 0
+            if (!visitados[vizinho] && capacidade > 0) {
+                pai[vizinho] = atual;
+                visitados[vizinho] = true;
+                fila.push(vizinho);
+
+                // Para se alcançar o destino
+                if (vizinho == t) break;
+            }
+        }
+    }
+
+    // Se não encontramos um caminho até t
+    if (!visitados[t]) {
+        return 0; // Não há caminho com capacidade positiva entre s e t
+    }
+
+    // Caminho encontrado: calcula o bottleneck (menor capacidade no caminho)
+    int bottleneck = INF;
+    int atual = t;
+
+    while (atual != s) {
+        int anterior = pai[atual];
+        bottleneck = min(bottleneck, residual[anterior][atual].first);
+        atual = anterior;
+    }
+
+    return bottleneck;
 }
 
 
@@ -1727,4 +1949,4 @@ void BFS(const vector<vector<int>>& graph, int origem){
         }       
     }
 
-}
+} 
