@@ -1557,7 +1557,7 @@ vector<vector<pair<int, pair<int, int>>>> txt_to_flow_network_vector(const strin
         }
     }
 
-    cout << "O grafo " << nome_arquivo << " foi carregado com sucesso!" << endl;
+    cout << nome_arquivo << " foi carregado com sucesso!" << endl;
 
     return graph;
 }
@@ -1581,7 +1581,7 @@ vector<vector<pair<int, pair<int, bool>>>> create_residual_graph_vector(const ve
 
             if (capacidade > 0) {
 
-                // Adiciona aresta original ao grafo residual
+            // Adiciona aresta original ao grafo residual
             residual_vector[u].push_back({v, {capacidade - fluxo, true}}); 
 
             // Adiciona aresta reversa ao grafo residual com capacidade zero
@@ -1656,7 +1656,7 @@ int Find_Bottleneck_Vector(const vector<vector<pair<int, pair<int, bool>>>>& res
     return bottleneck;
 }
 
-void Update_Flow_Vector(
+void Update_Flow_Vector (
     vector<vector<pair<int, pair<int, int>>>>& graph,
     vector<vector<pair<int, pair<int, bool>>>>& residual_vector,
     const vector<int>& pai,
@@ -1665,6 +1665,7 @@ void Update_Flow_Vector(
     int t, // Destino do fluxo
     bool direcionado
 ) {
+
     int atual = t;
 
     // Atualiza os fluxos no caminho do destino até a origem
@@ -1710,11 +1711,30 @@ void Update_Flow_Vector(
 }
 
 
+void create_edges_flow_allocation_txt_Vector(vector<vector<pair<int, pair<int, int>>>> graph, string txt_file_name) {
 
+    ofstream arquivo_de_saida(txt_file_name);
+    int numVertices = graph.size();
 
-// fazer um txt de resposta!
+    for (int v = 0; v < numVertices; v++) {
 
-int FordFulkerson_Vector(vector<vector<pair<int, pair<int, int>>>> graph, int s, int t) {
+        for (auto& edge : graph[v]) {
+
+            int u = edge.first;
+            int capacidade = edge.second.first;
+            int fluxo = edge.second.second;
+
+            arquivo_de_saida << v << " -> " << u << ". Capacidade = " << capacidade << ". Fluxo = " << fluxo << endl;
+
+        }
+
+    }
+
+    arquivo_de_saida.close();
+
+}
+
+int FordFulkerson_Vector(vector<vector<pair<int, pair<int, int>>>> graph, int s, int t, bool create_txt_file = false, string txt_file_name = "flow_network_results.txt") {
 
     vector<vector<pair<int, pair<int, bool>>>> residual = create_residual_graph_vector(graph);
     int numVertices = graph.size();
@@ -1728,12 +1748,22 @@ int FordFulkerson_Vector(vector<vector<pair<int, pair<int, int>>>> graph, int s,
         Update_Flow_Vector(graph, residual, pai, bottleneck, s, t, true);
 
         //cout << "Grafo atualizado com o gargalo." << endl;
+        
+    }
+
+    if (create_txt_file) {
+
+        create_edges_flow_allocation_txt_Vector(graph, txt_file_name);
+            
+        cout << "Alocacao de fluxo para todas as arestas gravada em " << txt_file_name << endl;
 
     }
 
     return max_flow;
 
 }
+
+
 
 
 
@@ -1999,15 +2029,3 @@ int FordFulkerson_Vector(vector<vector<pair<int, pair<int, int>>>> graph, int s,
 
 // } 
 
-// TESTE
-
-int main () {
-
-    string nome_arquivo = "grafo_rf_1.txt";
-    vector<vector<pair<int, pair<int, int>>>> flow_network_1 = txt_to_flow_network_vector(nome_arquivo, true);
-
-    int max_flow = FordFulkerson_Vector(flow_network_1, 1, 2);
-    cout << "Fluxo maximo: " << max_flow << endl;
-
-    return 0;
-}
