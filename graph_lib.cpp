@@ -1472,7 +1472,7 @@ void Caminho_Minimo_Rede(const vector<vector<pair<int, float>>>& graph, string n
 
 // TP3: Representando redes de fluxo e Algoritmo de Ford-Fulkerson:
 
-vector<vector<pair<int, int>>> txt_to_weight_adjacency_targeted_vector(const string& nome_arquivo, bool direcionado) {
+vector<vector<pair<int, float>>> txt_to_weight_adjacency_targeted_vector(const string& nome_arquivo, bool direcionado) {
 
     ifstream arquivo(nome_arquivo);
     if (!arquivo.is_open()) {
@@ -1485,7 +1485,7 @@ vector<vector<pair<int, int>>> txt_to_weight_adjacency_targeted_vector(const str
     
     arquivo >> numVertices;
 
-    vector<vector<pair<int, int>>> graph(numVertices + 1);
+    vector<vector<pair<int, float>>> graph(numVertices + 1);
 
     pair<int, float> flag;
     flag.first = 0;
@@ -1526,6 +1526,7 @@ vector<vector<pair<int, int>>> txt_to_weight_adjacency_targeted_vector(const str
 
     return graph;
 }
+
 
 vector<vector<pair<int, pair<int, int>>>> txt_to_flow_network_vector(const string& nome_arquivo, bool direcionado) {
 
@@ -1572,10 +1573,14 @@ vector<vector<pair<int, pair<int, int>>>> txt_to_flow_network_vector(const strin
     return graph;
 }
 
+//COLOCAR UM BOOLEANO AQUI TAMBEM REPRESENTANDO ORIGINAL E REVERSA PARA CASO DE 4 ARESTAS EM 2 VERTICES
+
+
+
 vector<vector<pair<int, pair<int, bool>>>> create_residual_graph_vector(const vector<vector<pair<int, pair<int, int>>>>& graph) {
 
     int numVertices = graph.size();
-    vector<vector<pair<int, pair<int, bool>>>> residual(numVertices);
+    vector<vector<pair<int, pair<int, bool>>>> residual_vector(numVertices);
 
     for (int u = 0; u < numVertices; ++u) {
 
@@ -1584,21 +1589,20 @@ vector<vector<pair<int, pair<int, bool>>>> create_residual_graph_vector(const ve
             int capacidade = edge.second.first; // Capacidade da aresta original
             int fluxo = edge.second.second;
 
-            if (capacidade != 0) {
+            if (capacidade > 0) {
 
                 // Adiciona aresta original ao grafo residual
-            residual[u].push_back({v, {capacidade - fluxo, true}}); 
+            residual_vector[u].push_back({v, {capacidade - fluxo, true}}); 
 
             // Adiciona aresta reversa ao grafo residual com capacidade zero
-            residual[v].push_back({u, {fluxo, false}});
+            residual_vector[v].push_back({u, {fluxo, false}});
 
             }
 
         }
     }
 
-    return residual;
-
+    return residual_vector;
 }
 
 
@@ -1611,7 +1615,7 @@ int FordFulkerson_Vector(vector<vector<pair<int, pair<int, int>>>> graph, int s,
     vector<int> pai(numVertices);
 
     int bottleneck;
-    while (bottleneck = find_Bottleneck(residual, s, t, pai) != 0) {
+    while (bottleneck = Find_Bottleneck_Vector(residual, s, t, pai) != 0) {
 
         
 
@@ -1633,14 +1637,14 @@ int FordFulkerson_Vector(vector<vector<pair<int, pair<int, int>>>> graph, int s,
 
 }
 
-int Find_Bottleneck_Vector(const vector<vector<pair<int, pair<int, bool>>>>& residual, int s, int t, vector<int>& pai) {
+int Find_Bottleneck_Vector(const vector<vector<pair<int, pair<int, bool>>>>& residual_vector, int s, int t, vector<int>& pai) {
 
-    int INF = numeric_limits<int>::max();
-    vector<bool> visitados(residual.size(), false);
+    int INF = 1e9;
+    vector<bool> visitados(residual_vector.size(), false);
 
     queue<int> fila;
     visitados[s] = true;
-    pai.assign(residual.size(), -1); // Reseta o vetor pai
+    pai.assign(residual_vector.size(), -1); // Reseta o vetor pai
     fila.push(s);
 
     // Realiza a BFS para encontrar o caminho de s até t
@@ -1648,7 +1652,7 @@ int Find_Bottleneck_Vector(const vector<vector<pair<int, pair<int, bool>>>>& res
         int atual = fila.front();
         fila.pop();
 
-        for (const auto& edge : residual[atual]) {
+        for (const auto& edge : residual_vector[atual]) {
             int vizinho = edge.first;
             int capacidade = edge.second.first;
 
@@ -1658,7 +1662,7 @@ int Find_Bottleneck_Vector(const vector<vector<pair<int, pair<int, bool>>>>& res
                 visitados[vizinho] = true;
                 fila.push(vizinho);
 
-                // Para se no destino
+                // Para se chegar no destino
                 if (vizinho == t) break;
             }
         }
@@ -1677,7 +1681,7 @@ int Find_Bottleneck_Vector(const vector<vector<pair<int, pair<int, bool>>>>& res
         int anterior = pai[atual];
 
         // Encontra a aresta correspondente no grafo residual
-        for (const auto& edge : residual[anterior]) {
+        for (const auto& edge : residual_vector[anterior]) {
             if (edge.first == atual) {
                 bottleneck = min(bottleneck, edge.second.first);
                 break;
@@ -1689,6 +1693,67 @@ int Find_Bottleneck_Vector(const vector<vector<pair<int, pair<int, bool>>>>& res
 
     return bottleneck;
 }
+
+
+
+//VER SE VAI SER PARAMETRO OU A PROPRIA FUNCAO VAI CHAMAR AS OUTRAS
+
+void Update_Flow_Vector(
+    vector<vector<pair<int, pair<int, int>>>>& graph,
+    vector<vector<pair<int, pair<int, bool>>>>& residual_vector,
+    const vector<int>& pai,
+    int bottleneck,
+    bool direcionado
+) {
+    int atual = pai.back(); // Começa do destino
+    int s = pai.front();   // Origem do caminho
+
+    while (atual != s) {
+        int anterior = pai[atual];
+
+        // Atualiza o fluxo no grafo original
+        for (auto& edge : graph[anterior]) {
+            if (edge.first == atual) {
+                edge.second.second += bottleneck; // Incrementa fluxo na aresta direta
+                break;
+            }
+        }
+
+        // Atualiza o fluxo reverso no grafo original
+        if(direcionado == false){
+            for (auto& edge : graph[atual]) {
+                if (edge.first == anterior) {
+                    edge.second.second -= bottleneck; // Decrementa fluxo na aresta reversa
+                    break;
+                }
+            }
+        }
+
+        // VER SE É ISSO MESMO
+        
+
+        // Atualiza o grafo residual na aresta direta
+        for (auto& edge : residual_vector[anterior]) {
+            if (edge.first == atual && edge.second.second == true) {  // Se a aresta é original (bool true)
+                edge.second.first -= bottleneck;  // Diminui a capacidade residual
+                break;
+            }
+        }
+
+        // Atualiza o grafo residual na aresta reversa
+        for (auto& edge : residual_vector[atual]) {
+            if (edge.first == anterior && edge.second.second == false) {  // Se a aresta é reversa (bool false)
+                edge.second.first += bottleneck;  // Aumenta a capacidade residual reversa
+                break;
+            }
+        }
+
+
+        // Move para o próximo vértice no caminho
+        atual = anterior;
+    }
+}
+
 
 
 
@@ -1780,6 +1845,10 @@ vector<vector<float>> txt_to_weight_adjacency_matrix(const string& nome_arquivo,
     return matrix;
 }
 
+//VER SE ESSA MATRIX É INT OU FLOAT(CONSIDERANDO DIJKSTRA C PESO FLOAT, CASO FAÇA COM QUE INTERLIGUE OS TRABALHOS)
+
+
+
 vector<vector<pair<int, int>>> txt_to_flow_network_matrix(const string& nome_arquivo, bool direcionado) {
 
     ifstream arquivo(nome_arquivo);
@@ -1812,11 +1881,15 @@ vector<vector<pair<int, int>>> txt_to_flow_network_matrix(const string& nome_arq
     return matrix;
 }
 
+//COLOCAR UM BOOLEANO AQUI TAMBEM REPRESENTANDO ORIGINAL E REVERSA PARA CASO DE 4 ARESTAS EM 2 VERTICES
+
+
+
 vector<vector<pair<int, pair<int, bool>>>> create_residual_graph_matrix(const vector<vector<pair<int, int>>>& matrix) {
     int numVertices = matrix.size();
 
     // Inicializa a matriz residual
-    vector<vector<pair<int, pair<int, bool>>>> residual(numVertices, vector<pair<int, pair<int, bool>>>(numVertices, {0, {0, false}}));
+    vector<vector<pair<int, pair<int, bool>>>> residual_matrix(numVertices, vector<pair<int, pair<int, bool>>>(numVertices, {0, {0, false}}));
 
     // Percorre toda a matriz de adjacência
     for (int u = 0; u < numVertices; ++u) {
@@ -1826,17 +1899,17 @@ vector<vector<pair<int, pair<int, bool>>>> create_residual_graph_matrix(const ve
 
             if (capacidade > 0) {
                 // Atualiza aresta direta
-                residual[u][v].first = capacidade - fluxo;  // Capacidade residual
-                residual[u][v].second.first = true;         // Direção direta
+                residual_matrix[u][v].first = capacidade - fluxo;  // Capacidade residual
+                residual_matrix[u][v].second.first = true;         // Direção direta
 
                 // Atualiza aresta reversa
-                residual[v][u].first = fluxo;               // Capacidade residual reversa
-                residual[v][u].second.first = false;        // Direção reversa
+                residual_matrix[v][u].first = fluxo;               // Capacidade residual reversa
+                residual_matrix[v][u].second.first = false;        // Direção reversa
             }
         }
     }
 
-    return residual;
+    return residual_matrix;
 }
 
 // fazer um txt de resposta!
@@ -1848,7 +1921,7 @@ int FordFulkerson_Matrix(vector<vector<pair<int, int>>> matrix, int s, int t) {
     vector<int> pai(numVertices);
 
     int bottleneck;
-    while (bottleneck = find_Bottleneck(residual, s, t, pai) != 0) {
+    while (bottleneck = Find_Bottleneck_Matrix(residual, s, t, pai) != 0) {
 
         
 
@@ -1870,10 +1943,10 @@ int FordFulkerson_Matrix(vector<vector<pair<int, int>>> matrix, int s, int t) {
 
 }
 
-int find_Bottleneck(const vector<vector<pair<int, pair<int, bool>>>>& residual, int s, int t, vector<int>& pai) {
+int Find_Bottleneck_Matrix(const vector<vector<pair<int, pair<int, bool>>>>& residual_matrix, int s, int t, vector<int>& pai) {
     
-    int INF = numeric_limits<int>::max();
-    int numVertices = residual.size();
+    int INF = 1e9;
+    int numVertices = residual_matrix.size();
     vector<bool> visitados(numVertices, false);
 
     queue<int> fila;
@@ -1886,8 +1959,8 @@ int find_Bottleneck(const vector<vector<pair<int, pair<int, bool>>>>& residual, 
         int atual = fila.front();
         fila.pop();
 
-        for (int vizinho = 0; vizinho < numVertices; ++vizinho) {
-            int capacidade = residual[atual][vizinho].first;
+        for (int vizinho = 1; vizinho < numVertices; vizinho++) {
+            int capacidade = residual_matrix[atual][vizinho].first;
 
             // Se o vizinho não foi visitado e a capacidade é maior que 0
             if (!visitados[vizinho] && capacidade > 0) {
@@ -1912,11 +1985,51 @@ int find_Bottleneck(const vector<vector<pair<int, pair<int, bool>>>>& residual, 
 
     while (atual != s) {
         int anterior = pai[atual];
-        bottleneck = min(bottleneck, residual[anterior][atual].first);
+        bottleneck = min(bottleneck, residual_matrix[anterior][atual].first);
         atual = anterior;
     }
 
     return bottleneck;
+}
+
+
+
+//VER SE VAI SER PARAMETRO OU A PROPRIA FUNCAO VAI CHAMAR AS OUTRAS
+
+void Update_Flow_Matrix(
+    vector<vector<pair<int, int>>>& matrix,           // Grafo original (matriz de adjacência com capacidades)
+    vector<vector<pair<int, pair<int, bool>>>>& residual_matrix, // Grafo residual (com capacidade e direção)
+    const vector<int>& pai,              // Caminho encontrado (vetor de pais)
+    int bottleneck,                      // Gargalo do caminho
+    bool direcionado                    // Se o grafo é direcionado ou não
+) {
+    int atual = pai.back();  // Começa do destino
+    int s = pai.front();     // Origem do caminho
+
+    while (atual != s) {
+        int anterior = pai[atual];
+
+        // Atualiza o fluxo no grafo original (matriz de adjacência)
+        matrix[anterior][atual].second += bottleneck;  // Incrementa fluxo na aresta direta (segundo valor da pair)
+
+        // Atualiza o fluxo reverso no grafo original, se não for direcionado
+        if (!direcionado) {
+            matrix[atual][anterior].second -= bottleneck;  // Decrementa fluxo na aresta reversa
+        }
+
+        // Atualiza o grafo residual na aresta direta (matriz residual)
+        if (residual_matrix[anterior][atual].second.second == true) {  // Se a aresta é original (bool true)
+            residual_matrix[anterior][atual].first -= bottleneck;  // Diminui a capacidade residual
+        }
+
+        // Atualiza o grafo residual na aresta reversa
+        if (residual_matrix[atual][anterior].second.second == false) {  // Se a aresta é reversa (bool false)
+            residual_matrix[atual][anterior].first += bottleneck;  // Aumenta a capacidade residual reversa
+        }
+
+        // Move para o próximo vértice no caminho
+        atual = anterior;
+    }
 }
 
 
