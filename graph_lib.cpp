@@ -2064,17 +2064,3 @@ float Ford_Fulkerson_Matrix_With_Execution_Time(vector<vector<pair<int, int>>> m
     return tempo_execucao.count();
 }
 
-
-// TESTE
-
-int main () {
-
-    string nome_arquivo = "grafo_rf_1.txt";
-    //vector<vector<pair<int, pair<int, int>>>> flow_network_1 = txt_to_flow_network_vector(nome_arquivo, true);
-    vector<vector<pair<int, int>>> flow_network_1 = txt_to_flow_network_matrix(nome_arquivo, true);
-
-    int max_flow = Ford_Fulkerson_Matrix(flow_network_1, 1, 2);
-    cout << "Fluxo maximo: " << max_flow << endl;
-
-    return 0;
-}
