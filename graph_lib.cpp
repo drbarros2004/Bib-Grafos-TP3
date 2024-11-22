@@ -1763,6 +1763,35 @@ int FordFulkerson_Vector(vector<vector<pair<int, pair<int, int>>>> graph, int s,
 
 }
 
+float FordFulkerson_Vector_With_Execution_Time(vector<vector<pair<int, pair<int, int>>>> graph, int s, int t) {
+
+    vector<vector<pair<int, pair<int, bool>>>> residual = create_residual_graph_vector(graph);
+    int numVertices = graph.size();
+    vector<int> pai(numVertices);
+    int max_flow = 0;
+
+    int bottleneck;
+
+    using namespace std::chrono;
+    auto inicio = high_resolution_clock::now();
+
+    while ((bottleneck = Find_Bottleneck_Vector(residual, s, t, pai)) != 0) {
+
+        max_flow += bottleneck;
+        Update_Flow_Vector(graph, residual, pai, bottleneck, s, t, true);
+
+        //cout << "Grafo atualizado com o gargalo." << endl;
+        
+    }
+
+    auto fim = high_resolution_clock::now(); 
+
+    duration<double> tempo_execucao = fim - inicio;
+
+    return tempo_execucao.count();
+
+}
+
 
 
 
