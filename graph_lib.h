@@ -75,6 +75,7 @@ vector<vector<pair<int, pair<int, int>>>> txt_to_flow_network_vector(const strin
 vector<vector<pair<int, float>>> txt_to_weight_adjacency_targeted_vector(const string& nome_arquivo, bool direcionado);
 
 int FordFulkerson_Vector(vector<vector<pair<int, pair<int, int>>>> graph, int s, int t, bool create_txt_file = false, string txt_file_name = "flow_network_results.txt");
+float FordFulkerson_Vector_With_Execution_Time(vector<vector<pair<int, pair<int, int>>>> graph, int s, int t);
 
 // Essas funções são auxiliares para a Ford_Fulkerson_Vector.
 
