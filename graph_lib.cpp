@@ -1835,7 +1835,6 @@ vector<vector<float>> txt_to_weight_adjacency_matrix(const string& nome_arquivo,
 
 
 vector<vector<pair<int, int>>> txt_to_flow_network_matrix(const string& nome_arquivo, bool direcionado) {
-
     ifstream arquivo(nome_arquivo);
     if (!arquivo.is_open()) {
         throw runtime_error("Erro ao abrir o arquivo de entrada!");
@@ -1856,13 +1855,12 @@ vector<vector<pair<int, int>>> txt_to_flow_network_matrix(const string& nome_arq
         matrix[u][v] = {capacidade, fluxo};
 
         // Se o grafo não for direcionado, adiciona a aresta inversa
-        if (direcionado == false) {
+        if (!direcionado) {
             matrix[v][u] = {capacidade, fluxo};
         }
     }
 
     arquivo.close();
-
     return matrix;
 }
 
@@ -1871,15 +1869,14 @@ vector<vector<pair<int, int>>> txt_to_flow_network_matrix(const string& nome_arq
 
 
 vector<vector<pair<int, pair<int, bool>>>> create_residual_graph_matrix(const vector<vector<pair<int, int>>>& matrix) {
-
     int numVertices = matrix.size();
 
-    // Inicializa a matriz residual
+    // Inicializa a matriz residual com o mesmo tamanho
     vector<vector<pair<int, pair<int, bool>>>> residual_matrix(numVertices, vector<pair<int, pair<int, bool>>>(numVertices, {0, {0, false}}));
 
     // Percorre toda a matriz de adjacência
-    for (int u = 0; u < numVertices; ++u) {
-        for (int v = 0; v < numVertices; ++v) {
+    for (int u = 1; u < numVertices; ++u) {
+        for (int v = 1; v < numVertices; ++v) {
             int capacidade = matrix[u][v].first; // Capacidade da aresta original
             int fluxo = matrix[u][v].second;     // Fluxo na aresta original
 
@@ -1901,7 +1898,6 @@ vector<vector<pair<int, pair<int, bool>>>> create_residual_graph_matrix(const ve
 // fazer um txt de resposta!
 
 int Find_Bottleneck_Matrix(const vector<vector<pair<int, pair<int, bool>>>>& residual_matrix, int s, int t, vector<int>& pai) {
-    
     int INF = 1e9;
     int numVertices = residual_matrix.size();
     vector<bool> visitados(numVertices, false);
@@ -1916,7 +1912,7 @@ int Find_Bottleneck_Matrix(const vector<vector<pair<int, pair<int, bool>>>>& res
         int atual = fila.front();
         fila.pop();
 
-        for (int vizinho = 1; vizinho < numVertices; vizinho++) {
+        for (int vizinho = 1; vizinho < numVertices; ++vizinho) {
             int capacidade = residual_matrix[atual][vizinho].first;
 
             // Se o vizinho não foi visitado e a capacidade é maior que 0
@@ -1954,7 +1950,6 @@ int Find_Bottleneck_Matrix(const vector<vector<pair<int, pair<int, bool>>>>& res
 //VER SE VAI SER PARAMETRO OU A PROPRIA FUNCAO VAI CHAMAR AS OUTRAS
 
 void Update_Flow_Matrix(vector<vector<pair<int, int>>>& matrix, vector<vector<pair<int, pair<int, bool>>>>& residual_matrix, const vector<int>& pai, int bottleneck, int s, int t, bool direcionado) {
-
     int atual = t;  // Começa do destino
 
     while (atual != s) {
@@ -1969,12 +1964,12 @@ void Update_Flow_Matrix(vector<vector<pair<int, int>>>& matrix, vector<vector<pa
         }
 
         // Atualiza o grafo residual na aresta direta (matriz residual)
-        if (residual_matrix[anterior][atual].second.second == true) {  // Se a aresta é original (bool true)
+        if (residual_matrix[anterior][atual].second.first == true) {  // Se a aresta é original (bool true)
             residual_matrix[anterior][atual].first -= bottleneck;  // Diminui a capacidade residual
         }
 
         // Atualiza o grafo residual na aresta reversa
-        if (residual_matrix[atual][anterior].second.second == false) {  // Se a aresta é reversa (bool false)
+        if (residual_matrix[atual][anterior].second.first == false) {  // Se a aresta é reversa (bool false)
             residual_matrix[atual][anterior].first += bottleneck;  // Aumenta a capacidade residual reversa
         }
 
@@ -1984,9 +1979,7 @@ void Update_Flow_Matrix(vector<vector<pair<int, int>>>& matrix, vector<vector<pa
 }
 
 
-
 void create_edges_flow_allocation_txt_Matrix(const vector<vector<pair<int, int>>>& matrix, const string& txt_file_name) {
-
     ofstream arquivo_de_saida(txt_file_name);
 
     if (!arquivo_de_saida.is_open()) {
@@ -1995,8 +1988,8 @@ void create_edges_flow_allocation_txt_Matrix(const vector<vector<pair<int, int>>
 
     int numVertices = matrix.size();
 
-    for (int v = 0; v < numVertices; ++v) {
-        for (int u = 0; u < numVertices; ++u) {
+    for (int v = 1; v < numVertices; ++v) {
+        for (int u = 1; u < numVertices; ++u) {
             int capacidade = matrix[v][u].first;
             int fluxo = matrix[v][u].second;
 
