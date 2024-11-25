@@ -144,6 +144,37 @@ vector<pair<int, string>> dicionario = txt_to_dictionary("rede_de_colaboracao.tx
 Caminho_Minimo_Rede(grafo_rede, "Daniel R. FIgueiredo", "Alan M. Turing" , dicionario);
 ```
 
+# Recebendo grafo direcionado com pesos e redes de fluxo:
 
+Essas funções recebem o arquivo `.txt` e retornam o grafo na rerpesentação desejada. Optamos por diferenciar o grafo direcionado com peso da rede de fluxo para permitir que o grafo direcionado com peso possua arestas com pesos não inteiros, o que não é permitido na nossa implementação de rede de fluxo.
+
+Esses são exemplos de uso das funções parsa grafos direcionados com peso:
+```
+string nome_arquivo = "grafo_rf_example.txt";
+vector<vector<pair<int, float>>> flow_network_example = txt_to_directed_weighted_vector(nome_arquivo, true);
+vector<vector<float>> txt_to_directed_weighted_matrix(nome_arquivo, bool direcionado);
+```
+E para as redes de fluxo: 
+```
+vector<vector<pair<int, pair<int, int>>>> flow_network_example_vector = txt_to_flow_network_vector(nome_arquivo, true);
+vector<vector<pair<int, int>>> flow_network_example_matrix = txt_to_flow_network_matrix(nome_arquivo, true);
+```
+
+# Algoritmo de Ford-Fulkerson
+
+Essa função retorna um número inteiro (o fluxo máximo) de uma rede de fluxo.
+
+```
+int max_flow = Ford_Fulkerson_Vector(flow_network_4, 1, 2, true, txt_file_results_name);
+cout << "Fluxo maximo: " << max_flow << endl;
+```
+
+# Tempo de Execução do Algoritmo de Ford-Fulkerson
+
+Essa função aproveita o mesmo corpo do código da função anterior. A diferença é que ela retorna um valor do tipo float, que é o tempo de execução do algoritmo em segundos.
+
+```
+float tempo_ford_fulkerson = Ford_Fulkerson_Vector_With_Execution_Time(flow_network_4, 1, 2);
+```
 
 
