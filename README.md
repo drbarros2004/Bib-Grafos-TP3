@@ -162,7 +162,7 @@ vector<vector<pair<int, int>>> flow_network_example_matrix = txt_to_flow_network
 
 # Algoritmo de Ford-Fulkerson
 
-Essa função retorna um número inteiro (o fluxo máximo) de uma rede de fluxo.
+Essa função retorna um número inteiro (o fluxo máximo) de uma rede de fluxo. Os parâmetros da função são: a rede de fluxo (na representação correspondente); a fonte; o sumidouro; um valor booleano que indica se o usuário quer gerar um arquivo `.txt` com as informações de capacidade e fluxo de cada aresta após a execução do algoritmo; o nome do arquivo `.txt` de saída.
 
 ```
 int max_flow = Ford_Fulkerson_Vector(flow_network_example_vector, 1, 2, true, txt_file_results_name);
