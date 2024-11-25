@@ -167,8 +167,8 @@ Fizemos algumas funções que ajudam a implementação do algoritomo de Ford-Ful
 ```
 string nome_arquivo = "grafo_rf_example.txt";
 string saida_arquivo = "fluxo_por_arestas.txt"
-int s; //gargalo
-int t; //sumidouro
+int s; (gargalo)
+int t; (sumidouro)
 flow_network_example_vector = txt_to_flow_network_vector(nome_arquivo, true);
 
 residual_example_vector = create_residual_graph_vector(flow_network_example_vector);
