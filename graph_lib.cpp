@@ -1485,7 +1485,7 @@ vector<vector<pair<int, float>>> txt_to_directed_weighted_vector(const string& n
     
     arquivo >> numVertices;
 
-    vector<vector<pair<int, float>>> graph(numVertices + 1);
+    vector<vector<pair<int, float>>> graph(numVertices + 1); //cria o grafo direcionado
 
     pair<int, float> flag;
     flag.first = 0;
@@ -1540,7 +1540,7 @@ vector<vector<pair<int, pair<int, int>>>> txt_to_flow_network_vector(const strin
     
     arquivo >> numVertices;
 
-    vector<vector<pair<int, pair<int, int>>>> graph(numVertices + 1);
+    vector<vector<pair<int, pair<int, int>>>> graph(numVertices + 1); //cria a rede de fluxo
 
     while (arquivo >> u >> v >> capacidade) {
         pair<int, pair<int, int>> relacao;
@@ -1567,7 +1567,7 @@ vector<vector<pair<int, pair<int, int>>>> txt_to_flow_network_vector(const strin
 vector<vector<pair<int, pair<int, bool>>>> create_residual_graph_vector(const vector<vector<pair<int, pair<int, int>>>>& graph) {
 
     int numVertices = graph.size();
-    vector<vector<pair<int, pair<int, bool>>>> residual_vector(numVertices);
+    vector<vector<pair<int, pair<int, bool>>>> residual_vector(numVertices); //cria o grafo residual
 
     for (int u = 0; u < numVertices; ++u) {
 
@@ -1644,7 +1644,7 @@ int Find_Bottleneck_Vector(const vector<vector<pair<int, pair<int, bool>>>>& res
         // Encontra a aresta correspondente no grafo residual
         for (const auto& edge : residual_vector[anterior]) {
             if (edge.first == atual) {
-                bottleneck = min(bottleneck, edge.second.first);
+                bottleneck = min(bottleneck, edge.second.first); //acha o mínimo valor de capacidade (gargalo)
                 break;
             }
         }
@@ -1694,7 +1694,7 @@ void Update_Flow_Vector(vector<vector<pair<int, pair<int, int>>>>& graph, vector
         // Atualiza o grafo residual na aresta reversa
         for (auto& edge : residual_vector[atual]) {
             if (edge.first == anterior) {
-                edge.second.first += bottleneck; 
+                edge.second.first += bottleneck;  // Aumenta a capacidade residual reversa
                 break;
             }
         }
@@ -1714,7 +1714,7 @@ void create_edges_flow_allocation_txt_Vector(vector<vector<pair<int, pair<int, i
 
         for (auto& edge : graph[v]) {
 
-            int u = edge.first;
+            int u = edge.first; //vertice
             int capacidade = edge.second.first;
             int fluxo = edge.second.second;
 
@@ -1730,7 +1730,7 @@ void create_edges_flow_allocation_txt_Vector(vector<vector<pair<int, pair<int, i
 
 int Ford_Fulkerson_Vector(vector<vector<pair<int, pair<int, int>>>> graph, int s, int t, bool create_txt_file = false, string txt_file_name = "flow_network_results.txt") {
 
-    // Criação do grafo residual (matriz de adjacência residual)
+    // Criação do grafo residual (vetor de adjacência residual)
     vector<vector<pair<int, pair<int, bool>>>> residual_vector = create_residual_graph_vector(graph);
 
     int numVertices = graph.size();
@@ -1738,10 +1738,10 @@ int Ford_Fulkerson_Vector(vector<vector<pair<int, pair<int, int>>>> graph, int s
     int max_flow = 0;
 
     int bottleneck;
-    while ((bottleneck = Find_Bottleneck_Vector(residual_vector, s, t, pai)) != 0) {
+    while ((bottleneck = Find_Bottleneck_Vector(residual_vector, s, t, pai)) != 0) { // função = 0 quer dizer que acaba os caminhos possiveis
 
-        max_flow += bottleneck; 
-        Update_Flow_Vector(graph, residual_vector, pai, bottleneck, s, t, true);
+        max_flow += bottleneck;  //acha fluxo maximo
+        Update_Flow_Vector(graph, residual_vector, pai, bottleneck, s, t, true); //atualiza arestas
 
         // cout << "Grafo atualizado com o gargalo." << endl;
         
@@ -1771,20 +1771,20 @@ float Ford_Fulkerson_Vector_With_Execution_Time(vector<vector<pair<int, pair<int
     int bottleneck;
 
     using namespace std::chrono;
-    auto inicio = high_resolution_clock::now();
+    auto inicio = high_resolution_clock::now(); //inicio da contagem do tempo
 
     while ((bottleneck = Find_Bottleneck_Vector(residual_vector, s, t, pai)) != 0) {
 
-        max_flow += bottleneck;
-        Update_Flow_Vector(graph, residual_vector, pai, bottleneck, s, t, true);
+        max_flow += bottleneck; //atualiza fluxo máximo
+        Update_Flow_Vector(graph, residual_vector, pai, bottleneck, s, t, true); //atualiza as arestas dos grafos
 
         //cout << "Grafo atualizado com o gargalo." << endl;
         
     }
 
-    auto fim = high_resolution_clock::now(); 
+    auto fim = high_resolution_clock::now(); //fim da contagem do tempo
 
-    duration<double> tempo_execucao = fim - inicio;
+    duration<double> tempo_execucao = fim - inicio; //tempo total
 
     return tempo_execucao.count();
 
@@ -1809,7 +1809,7 @@ vector<vector<float>> txt_to_directed_weighted_matrix(const string& nome_arquivo
     arquivo >> numVertices;
 
     
-    vector<vector<float>> matrix(numVertices + 1, vector<float>(numVertices + 1, INF)); 
+    vector<vector<float>> matrix(numVertices + 1, vector<float>(numVertices + 1, INF)); //cria matriz direcionada
 
     while (arquivo >> u >> v >> w) {
 
@@ -1823,6 +1823,7 @@ vector<vector<float>> txt_to_directed_weighted_matrix(const string& nome_arquivo
         }
         matrix[u][v] = w;  
 
+        // Se o grafo não for direcionado, adiciona a aresta v -> u.
         if(direcionado == false){
             matrix[v][u] = w; 
         }
@@ -1836,6 +1837,7 @@ vector<vector<float>> txt_to_directed_weighted_matrix(const string& nome_arquivo
 
 
 vector<vector<pair<int, int>>> txt_to_flow_network_matrix(const string& nome_arquivo, bool direcionado) {
+    
     ifstream arquivo(nome_arquivo);
     if (!arquivo.is_open()) {
         throw runtime_error("Erro ao abrir o arquivo de entrada!");
@@ -1846,7 +1848,7 @@ vector<vector<pair<int, int>>> txt_to_flow_network_matrix(const string& nome_arq
 
     arquivo >> numVertices;
 
-    vector<vector<pair<int, int>>> matrix(numVertices + 1, vector<pair<int, int>>(numVertices + 1, {0, 0}));
+    vector<vector<pair<int, int>>> matrix(numVertices + 1, vector<pair<int, int>>(numVertices + 1, {0, 0})); //rede de fluxo com matriz
 
     // Lendo agora cada aresta,
 
@@ -1892,7 +1894,6 @@ vector<vector<pair<int, pair<int, bool>>>> create_residual_graph_matrix(const ve
     return residual_matrix;
 }
 
-// fazer um txt de resposta!
 
 int Find_Bottleneck_Matrix(const vector<vector<pair<int, pair<int, bool>>>>& residual_matrix, int s, int t, vector<int>& pai) {
     int INF = 1e9;
@@ -1935,7 +1936,7 @@ int Find_Bottleneck_Matrix(const vector<vector<pair<int, pair<int, bool>>>>& res
 
     while (atual != s) {
         int anterior = pai[atual];
-        bottleneck = min(bottleneck, residual_matrix[anterior][atual].first);
+        bottleneck = min(bottleneck, residual_matrix[anterior][atual].first); // encontra menor capacidade de aresta (gargalo)
         atual = anterior;
     }
 
@@ -1973,6 +1974,9 @@ void Update_Flow_Matrix(vector<vector<pair<int, int>>>& matrix, vector<vector<pa
 
 
 void create_edges_flow_allocation_txt_Matrix(const vector<vector<pair<int, int>>>& matrix, const string& txt_file_name) {
+
+    // Essa função cria um arquivo .txt de saída fazendo uma lista das arestas e explicitando suas capacidades e fluxo, respectivamente.
+    
     ofstream arquivo_de_saida(txt_file_name);
 
     if (!arquivo_de_saida.is_open()) {
@@ -2042,18 +2046,18 @@ float Ford_Fulkerson_Matrix_With_Execution_Time(vector<vector<pair<int, int>>> m
     int bottleneck;
 
     using namespace std::chrono;
-    auto inicio = high_resolution_clock::now();
+    auto inicio = high_resolution_clock::now(); //inicio da contagem do tempo
 
     while ((bottleneck = Find_Bottleneck_Matrix(residual_matrix, s, t, pai)) != 0) {
-        max_flow += bottleneck;
-        Update_Flow_Matrix(matrix, residual_matrix, pai, bottleneck, s, t, true);
+        max_flow += bottleneck; //atualiza fluxo maximo
+        Update_Flow_Matrix(matrix, residual_matrix, pai, bottleneck, s, t, true); //atualiza arestas dos grafos
 
         // cout << "Grafo atualizado com o gargalo." << endl;
     }
 
-    auto fim = high_resolution_clock::now();
+    auto fim = high_resolution_clock::now(); //fim da contagem do tempo
 
-    duration<double> tempo_execucao = fim - inicio;
+    duration<double> tempo_execucao = fim - inicio; //tempo máximo
 
     return tempo_execucao.count();
 }
