@@ -166,15 +166,18 @@ Fizemos algumas funções que ajudam a implementação do algoritomo de Ford-Ful
 
 ```
 string nome_arquivo = "grafo_rf_example.txt";
-vector<vector<pair<int, pair<int, int>>>> flow_network_example_vector = txt_to_flow_network_vector(nome_arquivo, true);
+string saida_arquivo = "fluxo_por_arestas.txt"
+int s; //gargalo
+int t; //sumidouro
+flow_network_example_vector = txt_to_flow_network_vector(nome_arquivo, true);
 
-vector<vector<pair<int, pair<int, bool>>>> residual_example_vector = create_residual_graph_vector(const vector<vector<pair<int, pair<int, int>>>>& flow_network_example_vector);
+residual_example_vector = create_residual_graph_vector(flow_network_example_vector);
 
-int bottleneck = Find_Bottleneck_Vector(const vector<vector<pair<int, pair<int, bool>>>>& residual_example_vector, int s, int t, vector<int>& pai)
+int bottleneck = Find_Bottleneck_Vector(residual_example_vector, s, t, pai)
 
-void Update_Flow_Vector(vector<vector<pair<int, pair<int, int>>>>& flow_network_example_vector, vector<vector<pair<int, pair<int, bool>>>>& residual_example_vector, const vector<int>& pai, int bottleneck, int s, int t, bool direcionado);
+void Update_Flow_Vector(flow_network_example_vector, residual_example_vector, pai, bottleneck, s, t, true);
 
-void create_edges_flow_allocation_txt_Vector(vector<vector<pair<int, pair<int, int>>>> flow_network_example_vector, string txt_file_name)
+void create_edges_flow_allocation_txt_Vector(flow_network_example_vector, saida_arquivo)
 ```
 # Algoritmo de Ford-Fulkerson
 
