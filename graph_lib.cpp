@@ -2019,6 +2019,14 @@ int Ford_Fulkerson_Matrix(vector<vector<pair<int, int>>> matrix, int s, int t, b
         // cout << "Grafo atualizado com o gargalo." << endl;
     }
 
+    if (create_txt_file) {
+
+        create_edges_flow_allocation_txt_Matrix(matrix, txt_file_name);
+            
+        cout << "Alocacao de fluxo para todas as arestas gravada em " << txt_file_name << endl;
+
+    }
+
     return max_flow;  // Retorna o fluxo máximo
 }
 
