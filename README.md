@@ -146,9 +146,9 @@ Caminho_Minimo_Rede(grafo_rede, "Daniel R. FIgueiredo", "Alan M. Turing" , dicio
 
 # Recebendo grafo direcionado com pesos e redes de fluxo:
 
-Essas funções recebem o arquivo `.txt` e retornam o grafo na rerpesentação desejada. Optamos por diferenciar o grafo direcionado com peso da rede de fluxo para permitir que o grafo direcionado com peso possua arestas com pesos não inteiros, o que não é permitido na nossa implementação de rede de fluxo.
+Essas funções recebem o arquivo `.txt` e retornam o grafo na rerpesentação desejada. Optamos por diferenciar o grafo direcionado com peso da rede de fluxo para permitir que o grafo direcionado com peso possua arestas com pesos não inteiros, podendo ser usado para algoritmos de busca já feitos anteriormente, o que não é permitido na nossa implementação de rede de fluxo, que já é feita com a capacidade e fluxo em cada aresta.
 
-Esses são exemplos de uso das funções parsa grafos direcionados com peso:
+Esses são exemplos de uso das funções para grafos direcionados com peso:
 ```
 string nome_arquivo = "grafo_rf_example.txt";
 vector<vector<pair<int, float>>> flow_network_example = txt_to_directed_weighted_vector(nome_arquivo, true);
@@ -160,6 +160,22 @@ vector<vector<pair<int, pair<int, int>>>> flow_network_example_vector = txt_to_f
 vector<vector<pair<int, int>>> flow_network_example_matrix = txt_to_flow_network_matrix(nome_arquivo, true);
 ```
 
+# Funções auxiliares
+
+Fizemos algumas funções que ajudam a implementação do algoritomo de Ford-Fulkerson. São funções responsáveis por criar o grafo residual, achar o gargalo do grafo residual, atualizar as capacidades e fluxos das arestas e printar os fluxos de cada aresta. 
+
+```
+string nome_arquivo = "grafo_rf_example.txt";
+vector<vector<pair<int, pair<int, int>>>> flow_network_example_vector = txt_to_flow_network_vector(nome_arquivo, true);
+
+vector<vector<pair<int, pair<int, bool>>>> residual_example_vector = create_residual_graph_vector(const vector<vector<pair<int, pair<int, int>>>>& flow_network_example_vector);
+
+int bottleneck = Find_Bottleneck_Vector(const vector<vector<pair<int, pair<int, bool>>>>& residual_example_vector, int s, int t, vector<int>& pai)
+
+void Update_Flow_Vector(vector<vector<pair<int, pair<int, int>>>>& flow_network_example_vector, vector<vector<pair<int, pair<int, bool>>>>& residual_example_vector, const vector<int>& pai, int bottleneck, int s, int t, bool direcionado);
+
+void create_edges_flow_allocation_txt_Vector(vector<vector<pair<int, pair<int, int>>>> flow_network_example_vector, string txt_file_name)
+```
 # Algoritmo de Ford-Fulkerson
 
 Essa função retorna um número inteiro (o fluxo máximo) de uma rede de fluxo. Os parâmetros da função são: a rede de fluxo (na representação correspondente); a fonte; o sumidouro; um valor booleano que indica se o usuário quer gerar um arquivo `.txt` com as informações de capacidade e fluxo de cada aresta após a execução do algoritmo; o nome do arquivo `.txt` de saída.
