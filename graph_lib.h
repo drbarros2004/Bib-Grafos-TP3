@@ -86,8 +86,8 @@ void Caminho_Minimo_Rede(const vector<vector<pair<int, float>>>& graph, string n
 
 // Funções de receber grafo direcionado:
 
-vector<vector<pair<int, float>>> txt_to_weight_adjacency_targeted_vector(const string& nome_arquivo, bool direcionado);
-vector<vector<float>> txt_to_weight_adjacency_matrix(const string& nome_arquivo, bool direcionado);
+vector<vector<pair<int, float>>> txt_to_directed_weighted_vector(const string& nome_arquivo, bool direcionado);
+vector<vector<float>> txt_to_directed_weighted_matrix(const string& nome_arquivo, bool direcionado);
 
 // Funções de tratar rede de fluxos:
 
