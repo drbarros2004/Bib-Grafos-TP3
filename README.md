@@ -165,7 +165,7 @@ vector<vector<pair<int, int>>> flow_network_example_matrix = txt_to_flow_network
 Essa função retorna um número inteiro (o fluxo máximo) de uma rede de fluxo.
 
 ```
-int max_flow = Ford_Fulkerson_Vector(flow_network_4, 1, 2, true, txt_file_results_name);
+int max_flow = Ford_Fulkerson_Vector(flow_network_example_vector, 1, 2, true, txt_file_results_name);
 cout << "Fluxo maximo: " << max_flow << endl;
 ```
 
@@ -174,7 +174,7 @@ cout << "Fluxo maximo: " << max_flow << endl;
 Essa função aproveita o mesmo corpo do código da função anterior. A diferença é que ela retorna um valor do tipo float, que é o tempo de execução do algoritmo em segundos.
 
 ```
-float tempo_ford_fulkerson = Ford_Fulkerson_Vector_With_Execution_Time(flow_network_4, 1, 2);
+float tempo_ford_fulkerson = Ford_Fulkerson_Matrix_With_Execution_Time(flow_network_example_matrix, 1, 2);
 ```
 
 
